@@ -1,0 +1,17 @@
+*{
+	margin: 0;
+	padding: 0;
+	font-weight: normal;
+	font-family: arial;
+	cursor: default;
+}
+html,body{
+	width:100%;
+	height:100%;
+}
+
+#page{
+	position:relative;
+	width:100%;
+	height:100%;
+}
