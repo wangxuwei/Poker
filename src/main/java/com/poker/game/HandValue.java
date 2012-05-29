@@ -22,7 +22,7 @@ package com.poker.game;
  * 
  * Implements the Comparable interface with <b>reversed</b> (descending sort) order.
  * 
- * @author Oscar Stigter
+ * @author woofgl
  */
 public class HandValue implements Comparable<HandValue> {
     

@@ -26,7 +26,7 @@ import java.util.Set;
  * The player's actions are delegated to a PlayerClient, which can be either
  * human-controlled or AI-controlled (bot).
  * 
- * @author Oscar Stigter
+ * @author woofgl
  */
 public class Player {
     
