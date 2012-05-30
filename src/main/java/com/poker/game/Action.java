@@ -20,7 +20,7 @@ package com.poker.game;
 /**
  * A Texas Hold'em poker action.
  * 
- * @author Oscar Stigter
+ * @author woofgl
  */
 public enum Action {
     

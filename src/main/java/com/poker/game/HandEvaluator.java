@@ -1,19 +1,3 @@
-// This file is part of the 'texasholdem' project, an open source
-// Texas Hold'em poker application written in Java.
-//
-// Copyright 2009 Oscar Stigter
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
 package com.poker.game;
 
@@ -22,7 +6,7 @@ package com.poker.game;
  *
  * NOTE: This class is implemented with the focus on performance (instead of clean design).
  * 
- * @author Oscar Stigter
+ * @author woofgl
  */
 public class HandEvaluator {
     
@@ -136,8 +120,8 @@ public class HandEvaluator {
      */
     private void calculateDistributions() {
         for (Card card : cards) {
-            rankDist[card.getRank()]++;
-            suitDist[card.getSuit()]++;
+            rankDist[card.getRankValue()]++;
+            suitDist[card.getSuitValue()]++;
         }
     }
     
@@ -149,9 +133,9 @@ public class HandEvaluator {
             if (suitDist[i] >= 5) {
                 flushSuit = i;
                 for (Card card : cards) {
-                    if (card.getSuit() == flushSuit) {
-                        if (!wheelingAce || card.getRank() != Card.ACE) {
-                            flushRank = card.getRank();
+                    if (card.getSuitValue() == flushSuit) {
+                        if (!wheelingAce || card.getRank() != CardRank.ACE) {
+                            flushRank = card.getRankValue();
                             break;
                         }
                     }
@@ -189,7 +173,7 @@ public class HandEvaluator {
             }
         }
         // Special case for the 'Steel Wheel' (Five-high Straight with a 'wheeling Ace') .
-        if ((count == 4) && (rank == Card.FIVE) && (rankDist[Card.ACE] > 0)) {
+        if ((count == 4) && (rank == CardRank.FIVE.ordinal()) && (rankDist[CardRank.ACE.ordinal()] > 0)) {
             wheelingAce = true;
             straightRank = rank;
         }
@@ -223,7 +207,7 @@ public class HandEvaluator {
         // Get the five highest ranks.
         int index = 1;
         for (Card card : cards) {
-            rankings[index++] = card.getRank();
+            rankings[index++] = card.getRankValue();
             if (index > 5) {
                 break;
             }
@@ -248,7 +232,7 @@ public class HandEvaluator {
             // Get the three kickers.
             int index = 2;
             for (Card card : cards) {
-                int rank = card.getRank();
+                int rank = card.getRankValue();
                 if (rank != pairRank) {
                     rankings[index++] = rank;
                     if (index > 4) {
@@ -283,7 +267,7 @@ public class HandEvaluator {
             rankings[2] = lowRank;
             // Get the kicker card.
             for (Card card : cards) {
-                int rank = card.getRank();
+                int rank = card.getRankValue();
                 if ((rank != highRank) && (rank != lowRank)) {
                     rankings[3] = rank;
                     break;
@@ -311,7 +295,7 @@ public class HandEvaluator {
             // Get the remaining two cards as kickers.
             int index = 2;
             for (Card card : cards) {
-                int rank = card.getRank();
+                int rank = card.getRankValue();
                 if (rank != tripleRank) {
                     rankings[index++] = rank;
                     if (index > 3) {
@@ -359,8 +343,8 @@ public class HandEvaluator {
             rankings[0] = type.getValue();
             int index = 1;
             for (Card card : cards) {
-                if (card.getSuit() == flushSuit) {
-                    int rank = card.getRank();
+                if (card.getSuitValue() == flushSuit) {
+                    int rank = card.getRankValue();
                     if (index == 1) {
                         flushRank = rank;
                     }
@@ -414,7 +398,7 @@ public class HandEvaluator {
             // Get the remaining card as kicker.
             int index = 2;
             for (Card card : cards) {
-                int rank = card.getRank();
+                int rank = card.getRankValue();
                 if (rank != quadRank) {
                     rankings[index++] = rank;
                     break;
@@ -446,8 +430,8 @@ public class HandEvaluator {
             int inStraight = 1;
             int inFlush = 1;
             for (Card card : cards) {
-                int rank = card.getRank();
-                int suit = card.getSuit();
+                int rank = card.getRankValue();
+                int suit = card.getSuitValue();
                 if (lastRank != -1) {
                     int rankDiff = lastRank - rank;
                     if (rankDiff == 1) {
@@ -479,7 +463,7 @@ public class HandEvaluator {
             }
             
             if (inStraight >= 5 && inFlush >= 5) {
-                if (straightRank == Card.ACE) {
+                if (straightRank == CardRank.ACE.ordinal()) {
                     // Royal Flush.
                     type = HandValueType.ROYAL_FLUSH;
                     rankings[0] = type.getValue();
