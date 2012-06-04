@@ -1,19 +1,3 @@
-// This file is part of the 'texasholdem' project, an open source
-// Texas Hold'em poker application written in Java.
-//
-// Copyright 2009 Oscar Stigter
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
 package com.poker.game;
 
@@ -34,7 +18,7 @@ public class Player {
     private final String name;
     
     /** Client application responsible for the actual behavior. */
-    private final Client client;
+    //private final Client client;
     
     /** Hand of cards. */
     private final Hand hand;
@@ -67,28 +51,18 @@ public class Player {
      *            The player's name.
      * @param cash
      *            The player's starting amount of cash.
-     * @param client
-     *            The client application.
      */
-    public Player(String name, int cash, Client client) {
+    public Player(String name, int cash) {
         this.name = name;
         this.cash = cash;
-        this.client = client;
+        //this.client = client;
 
         hand = new Hand();
 
         resetHand();
     }
     
-    /**
-     * Returns the client.
-     * 
-     * @return The client.
-     */
-    public Client getClient() {
-        return client;
-    }
-    
+
     /**
      * Prepares the player for another hand.
      */
@@ -265,7 +239,7 @@ public class Player {
 	 * 
 	 * Determining the player's action is handled by the client application.
 	 * 
-	 * @param actions
+	 * @param action
 	 *            The allowed actions.
 	 * @param minBet
 	 *            The minimum bet.
@@ -274,8 +248,9 @@ public class Player {
 	 * 
 	 * @return The selected action.
 	 */
-    public Action act(Set<Action> actions, int minBet, int currentBet) {
-        action = client.act(actions);
+    public Action act(Table table, Action action, int minBet, int currentBet) {
+        //player do action, in web because it need push pattern, can't use pull pattern, it need implement in out side
+        //action = client.act(actions);
         switch (action) {
             case CHECK:
                 break;
@@ -309,6 +284,7 @@ public class Player {
                 hand.removeAllCards();
                 break;
         }
+        table.onAction(action, this);
         return action;
     }
     
@@ -328,7 +304,7 @@ public class Player {
      * @return The cloned player.
      */
     public Player publicClone() {
-        Player clone = new Player(name, cash, null);
+        Player clone = new Player(name, cash);
         clone.hasCards = hasCards;
         clone.bet = bet;
         clone.raises = raises;
