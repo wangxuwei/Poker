@@ -1,6 +1,7 @@
-
 package com.poker.game;
 
+import javax.swing.border.Border;
+import javax.xml.transform.Source;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,63 +9,109 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Limit Texas Hold'em poker table.
- * 
+ * <p/>
  * Controls the com.poker.game flow for a single poker table.
- * 
+ *
  * @author woofgl
  */
 public class Table {
-    
-    /** The maximum number of bets or raises in a single hand per player. */
+
+    /**
+     * The maximum number of bets or raises in a single hand per player.
+     */
     private static final int MAX_RAISES = 4;
-    
-    /** The size of the big blind. */
+
+    /**
+     * The size of the big blind.
+     */
     private final int bigBlind;
-    
-    /** The players at the table. */
+
+    /**
+     * The players at the table.
+     */
     private final List<Player> players;
-    
-    /** The active players in the current hand. */
+
+    /**
+     * The active players in the current hand.
+     */
     private final List<Player> activePlayers;
-    
-    /** The deck of cards. */
+
+    /**
+     * The deck of cards.
+     */
     private final Deck deck;
-    
-    /** The community cards on the board. */
+
+    /**
+     * The community cards on the board.
+     */
     private final List<Card> board;
-    
-    /** The current dealer position. */
+
+    /**
+     * The current dealer position.
+     */
     private int dealerPosition;
 
-    /** The current dealer. */
+    /**
+     * The current dealer.
+     */
     private Player dealer;
 
-    /** The position of the acting player. */
+    /**
+     * The position of the acting player.
+     */
     private int actorPosition;
-    
-    /** The acting player. */
+
+    /**
+     * The acting player.
+     */
     private Player actor;
 
-    /** The minimum bet in the current hand. */
+    /**
+     * The minimum bet in the current hand.
+     */
     private int minBet;
-    
-    /** The current bet in the current hand. */
+
+    /**
+     * The current bet in the current hand.
+     */
     private int bet;
-    
-    /** The pot in the current hand. */
+
+    /**
+     * The pot in the current hand.
+     */
     private int pot;
-    
-    /** Whether the com.poker.game is over. */
+
+    /**
+     * Whether the com.poker.game is over.
+     */
     private boolean gameOver;
-    
+
+    private final int DEFALT_MAX_PLAYER = 8;
+
+    private final int maxPlayers = DEFALT_MAX_PLAYER;
+
+    private final static Lock lock = new ReentrantLock();
+
+    private final Condition actionChange;
+
+    private Action lastAction = null;
+    private Action currentAction = null;
+    private Player currentActionPlayer = null;
+    private Player lastActionPlayer = null;
+
+    private TableState state = null;
+
+
     /**
      * Constructor.
-     * 
-     * @param bigBlind
-     *            The size of the big blind.
+     *
+     * @param bigBlind The size of the big blind.
      */
     public Table(int bigBlind) {
         this.bigBlind = bigBlind;
@@ -72,29 +119,34 @@ public class Table {
         activePlayers = new ArrayList<Player>();
         deck = new Deck();
         board = new ArrayList<Card>();
+        actionChange = lock.newCondition();
     }
-    
+
     /**
      * Adds a player.
-     * 
-     * @param player
-     *            The player.
+     *
+     * @param player   The player.
+     * @param position the player site position
      */
-    public void addPlayer(Player player) {
+    public void addPlayer(Player player, int position) {
         players.add(player);
     }
-    
+
     /**
      * Main com.poker.game loop.
      */
     public void start() {
         resetGame();
         while (!gameOver) {
-            playHand();
+            try {
+                playHand();
+            } catch (InterruptedException e) {
+                System.out.println(e);
+            }
         }
         notifyMessage("Game over.");
     }
-    
+
     /**
      * Resets the com.poker.game.
      */
@@ -102,29 +154,27 @@ public class Table {
         dealerPosition = -1;
         actorPosition = -1;
         gameOver = false;
-        for (Player player : players) {
-            player.getClient().joinedTable(bigBlind, players);
-        }
+        createState();
     }
-    
+
     /**
      * Plays a single hand.
      */
-    private void playHand() {
+    private void playHand() throws InterruptedException {
         resetHand();
-        
+
         // Small blind.
         rotateActor();
         postSmallBlind();
-        
+
         // Big blind.
         rotateActor();
         postBigBlind();
-        
+
         // Pre-Flop.
         dealHoleCards();
         doBettingRound();
-        
+
         // Flop.
         if (activePlayers.size() > 1) {
             bet = 0;
@@ -153,7 +203,7 @@ public class Table {
             }
         }
     }
-    
+
     /**
      * Resets the com.poker.game for a new hand.
      */
@@ -161,7 +211,6 @@ public class Table {
         board.clear();
         bet = 0;
         pot = 0;
-        notifyBoardUpdated();
         activePlayers.clear();
         for (Player player : players) {
             player.resetHand();
@@ -175,10 +224,7 @@ public class Table {
         actorPosition = dealerPosition;
         minBet = bigBlind;
         bet = minBet;
-        for (Player player : players) {
-            player.getClient().handStarted(dealer);
-        }
-        notifyPlayersUpdated(false);
+        createState();
         notifyMessage("New hand, %s is the dealer.", dealer);
     }
 
@@ -191,15 +237,13 @@ public class Table {
                 actorPosition = (actorPosition + 1) % players.size();
                 actor = players.get(actorPosition);
             } while (!activePlayers.contains(actor));
-            for (Player player : players) {
-                player.getClient().actorRotated(actor);
-            }
+            createState();
         } else {
             // Should never happen.
             throw new IllegalStateException("No active players left");
         }
     }
-    
+
     /**
      * Posts the small blind.
      */
@@ -207,20 +251,18 @@ public class Table {
         final int smallBlind = bigBlind / 2;
         actor.postSmallBlind(smallBlind);
         pot += smallBlind;
-        notifyBoardUpdated();
-        notifyPlayerActed();
+        createState();
     }
-    
+
     /**
      * Posts the big blind.
      */
     private void postBigBlind() {
         actor.postBigBlind(bigBlind);
         pot += bigBlind;
-        notifyBoardUpdated();
-        notifyPlayerActed();
+        createState();
     }
-    
+
     /**
      * Deals the Hole Cards.
      */
@@ -228,30 +270,29 @@ public class Table {
         for (Player player : players) {
             player.setCards(deck.deal(2));
         }
-        notifyPlayersUpdated(false);
+
         notifyMessage("%s deals the hole cards.", dealer);
     }
-    
+
     /**
      * Deals a number of community cards.
-     * 
-     * @param phaseName
-     *            The name of the phase.
-     * @param noOfCards
-     *            The number of cards to deal.
+     *
+     * @param phaseName The name of the phase.
+     * @param noOfCards The number of cards to deal.
      */
     private void dealCommunityCards(String phaseName, int noOfCards) {
         for (int i = 0; i < noOfCards; i++) {
             board.add(deck.deal());
         }
-        notifyPlayersUpdated(false);
+
         notifyMessage("%s deals the %s.", dealer, phaseName);
     }
-    
+
     /**
      * Performs a betting round.
      */
-    private void doBettingRound() {
+    //todo nedd reimplement
+    private void doBettingRound() throws InterruptedException {
         // Determine the number of active players.
         int playersToAct = activePlayers.size();
         // Determine the initial player and bet size.
@@ -263,72 +304,92 @@ public class Table {
             actorPosition = dealerPosition;
             bet = 0;
         }
-        notifyBoardUpdated();
+
         while (playersToAct > 0) {
             rotateActor();
             Set<Action> allowedActions = getAllowedActions(actor);
-            Action action = actor.act(allowedActions, minBet, bet);
-            if (!allowedActions.contains(action)) {
-                String msg = String.format("Illegal action (%s) from player %s!", action, actor);
-                throw new IllegalStateException(msg);
-            }
-            playersToAct--;
-            switch (action) {
-                case CHECK:
-                    // Do nothing.
-                    break;
-                case CALL:
-                    pot += actor.getBetIncrement();
-                    break;
-                case BET:
-                    bet = minBet;
-                    pot += actor.getBetIncrement();
-                    playersToAct = activePlayers.size();
-                    break;
-                case RAISE:
-                    bet += minBet;
-                    pot += actor.getBetIncrement();
-                    if (actor.getRaises() == MAX_RAISES) {
-                        // Max. number of raises reached; other players get one more turn.
-                        playersToAct = activePlayers.size() - 1;
-                    } else {
-                        // Otherwise, all players get another turn.
+            //Action action = actor.act(allowedActions, minBet, bet);
+            lock.lock();
+            try {
+
+                while (currentAction == null) {
+                    // This will wait until the value changes
+                    actionChange.await();
+                }
+                Action action = currentAction;
+                Player player = currentActionPlayer;
+                lastAction = action;
+                lastActionPlayer = player;
+
+                currentAction = null;
+                currentActionPlayer = null;
+                if (player.equals(actor)) {
+                    //not active actor, do nothing
+                    continue;
+                }
+
+
+                if (!allowedActions.contains(action)) {
+                    String msg = String.format("Illegal action (%s) from player %s!", action, actor);
+                    throw new IllegalStateException(msg);
+                }
+                playersToAct--;
+                switch (action) {
+                    case CHECK:
+                        // Do nothing.
+                        break;
+                    case CALL:
+                        pot += actor.getBetIncrement();
+                        break;
+                    case BET:
+                        bet = minBet;
+                        pot += actor.getBetIncrement();
                         playersToAct = activePlayers.size();
-                    }
-                    break;
-                case FOLD:
-                    actor.setCards(null);
-                    activePlayers.remove(actor);
-                    if (activePlayers.size() == 1) {
-                        // The player left wins.
-                        playerWins(activePlayers.get(0));
-                        playersToAct = 0;
-                    }
-                    break;
-                default:
-                    throw new IllegalStateException("Invalid action: " + action);
+                        break;
+                    case RAISE:
+                        bet += minBet;
+                        pot += actor.getBetIncrement();
+                        if (actor.getRaises() == MAX_RAISES) {
+                            // Max. number of raises reached; other players get one more turn.
+                            playersToAct = activePlayers.size() - 1;
+                        } else {
+                            // Otherwise, all players get another turn.
+                            playersToAct = activePlayers.size();
+                        }
+                        break;
+                    case FOLD:
+                        actor.setCards(null);
+                        activePlayers.remove(actor);
+                        if (activePlayers.size() == 1) {
+                            // The player left wins.
+                            playerWins(activePlayers.get(0));
+                            playersToAct = 0;
+                        }
+                        break;
+                    default:
+                        throw new IllegalStateException("Invalid action: " + action);
+                }
+                if (actor.isBroke()) {
+                    actor.setInAllPot(pot);
+                }
+                createState();
+            } finally {
+
+                lock.unlock();
             }
-            if (actor.isBroke()) {
-                actor.setInAllPot(pot);
+
+            // Reset player's bets.
+            for (Player player : activePlayers) {
+                player.resetBet();
             }
-            notifyBoardUpdated();
-            notifyPlayerActed();
+            createState();
         }
-        
-        // Reset player's bets.
-        for (Player player : activePlayers) {
-            player.resetBet();
-        }
-        notifyBoardUpdated();
-        notifyPlayersUpdated(false);
     }
 
     /**
      * Returns the allowed actions of a specific player.
-     * 
-     * @param player
-     *            The player.
-     * 
+     *
+     * @param player The player.
      * @return The allowed actions.
      */
     private Set<Action> getAllowedActions(Player player) {
@@ -355,16 +416,17 @@ public class Table {
         actions.add(Action.FOLD);
         return actions;
     }
-    
+
     /**
      * Performs the Showdown.
      */
+
     private void doShowdown() {
-	System.out.print("Board: ");
-	for (Card card : board) {
-	    System.out.print(card + " ");
-	}
-	System.out.println();
+        System.out.print("Board: ");
+        for (Card card : board) {
+            System.out.print(card + " ");
+        }
+        System.out.println();
         // Look at each hand value, sorted from highest to lowest.
         Map<HandValue, List<Player>> rankedPlayers = getRankedPlayers();
         for (HandValue handValue : rankedPlayers.keySet()) {
@@ -374,8 +436,6 @@ public class Table {
                 // Single winner.
                 Player winner = winners.get(0);
                 winner.win(pot);
-                notifyBoardUpdated();
-                notifyPlayersUpdated(true);
                 notifyMessage("%s wins the pot.", winner);
                 break;
             } else {
@@ -401,8 +461,6 @@ public class Table {
                         break;
                     }
                 }
-                notifyBoardUpdated();
-                notifyPlayersUpdated(true);
                 notifyMessage(sb.append('.').toString());
                 if (tempPot > 0) {
                     throw new IllegalStateException("Pot not empty after sharing between winners");
@@ -411,17 +469,17 @@ public class Table {
             }
         }
     }
-    
+
     /**
      * Returns the active players mapped and sorted by their hand value.
-     * 
+     * <p/>
      * The players are sorted in descending order (highest value first).
-     * 
-     * @return The active players mapped by their hand value (sorted). 
+     *
+     * @return The active players mapped by their hand value (sorted).
      */
     private Map<HandValue, List<Player>> getRankedPlayers() {
-	Map<HandValue, List<Player>> winners = new TreeMap<HandValue, List<Player>>();
-	for (Player player : activePlayers) {
+        Map<HandValue, List<Player>> winners = new TreeMap<HandValue, List<Player>>();
+        for (Player player : activePlayers) {
             // Create a hand with the community cards and the player's hole cards.
             Hand hand = new Hand(board);
             hand.addCards(player.getCards());
@@ -430,77 +488,66 @@ public class Table {
             System.out.format("%s: %s\n", player, handValue);
             List<Player> playerList = winners.get(handValue);
             if (playerList == null) {
-        	playerList = new LinkedList<Player>();
+                playerList = new LinkedList<Player>();
             }
             playerList.add(player);
             winners.put(handValue, playerList);
-	}
-	return winners;
+        }
+        return winners;
     }
-    
+
     /**
      * Let's a player win the pot.
-     * 
-     * @param player
-     *            The winning player.
+     *
+     * @param player The winning player.
      */
     private void playerWins(Player player) {
         player.win(pot);
         pot = 0;
-        notifyBoardUpdated();
         notifyMessage("%s wins.", player);
-    }
-    
-    /**
-     * Notifies listeners with a custom com.poker.game message.
-     * 
-     * @param message
-     *            The formatted message.
-     * @param args
-     *            Any arguments.
-     */
-    private void notifyMessage(String message, Object... args) {
-        message = String.format(message, args);
-        for (Player player : players) {
-            player.getClient().messageReceived(message);
-        }
-    }
-    
-    /**
-     * Notifies clients that the board has been updated.
-     */
-    private void notifyBoardUpdated() {
-        for (Player player : players) {
-            player.getClient().boardUpdated(board, bet, pot);
-        }
     }
 
     /**
-     * Notifies clients that one or more players have been updated.
-     * 
-     * A player's secret information is only sent its own client; other clients
-     * see only a player's public information.
+     * Notifies listeners with a custom com.poker.game message.
+     *
+     * @param message The formatted message.
+     * @param args    Any arguments.
      */
-    private void notifyPlayersUpdated(boolean showdown) {
-        for (Player playerToNotify : players) {
-            for (Player player : players) {
-                if (!showdown && !player.equals(playerToNotify)) {
-                    // Hide secret information to other players.
-                    player = player.publicClone();
-                }
-                playerToNotify.getClient().playerUpdated(player);
-            }
+    private void notifyMessage(String message, Object... args) {
+        message = String.format(message, args);
+        if (state == null) {
+            createState();
+        }
+        state.setMessage(message);
+    }
+
+
+
+    private void createState() {
+        state = new TableState(activePlayers, players, dealerPosition, actorPosition, board, pot, bigBlind, minBet);
+    }
+
+
+
+
+     void onAction(Action action, Player player) {
+        lock.lock();
+        try {
+            this.currentAction = action;
+            currentActionPlayer = player;
+            actionChange.notifyAll();
+
+        } finally {
+            lock.unlock();
         }
     }
-    
-    /**
-     * Notifies clients that a player has acted.
-     */
-    private void notifyPlayerActed() {
-        for (Player p : players) {
-            Player playerInfo = p.equals(actor) ? actor : actor.publicClone();
-            p.getClient().playerActed(playerInfo);
+
+    public TableState getState() {
+        if (state == null) {
+            state = new TableState(activePlayers, players, dealerPosition, actorPosition, board, pot, bigBlind, minBet);
         }
+        return state;
     }
-    
 }
+
+
