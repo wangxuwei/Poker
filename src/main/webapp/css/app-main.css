@@ -4,6 +4,7 @@
 	font-weight: normal;
 	font-family: arial;
 	cursor: default;
+	-webkit-user-select: none;
 }
 html,body{
 	width:100%;

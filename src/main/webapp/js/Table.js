@@ -1,36 +1,35 @@
 (function($){
 
-	function MainScreen(){};
+	function Table(){};
   
 	// --------- Component Interface Implementation ---------- //
-	MainScreen.prototype.create = function(data,config){
-		var html = $("#tmpl-MainScreen").html();
+	Table.prototype.create = function(data,config){
+		var html = $("#tmpl-Table").html();
 		return $(html);
 	}
 		
-	MainScreen.prototype.postDisplay = function(data,config){
+	Table.prototype.postDisplay = function(data,config){
 		var c = this;
 		var $e = this.$element;
 		
-		brite.display("Table");
+		
+		
 	}
 	// --------- /Component Interface Implementation ---------- //
 	
 	// --------- Component Public API --------- //	
 	
-	// --------- /Component Public API --------- //
-	
 	// --------- /Component Private API --------- //
 	// --------- Component Private API --------- //	
 	
+	// --------- /Component Public API --------- //
 	
 	// --------- Component Registration --------- //
-	brite.registerComponent("MainScreen",{
-        parent: "#page",
-        emptyParent: true,
+	brite.registerComponent("Table",{
+        parent: ".mainScreen-content",
         loadTmpl:true
     },function(){
-        return new MainScreen();
+        return new Table();
     });
 	// --------- /Component Registration --------- //
 })(jQuery);

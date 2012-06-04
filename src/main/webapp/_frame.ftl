@@ -3,6 +3,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Texas Hold¡¯em poker</title>
+    [@webBundle path="/bootstrap/js" type="js" /]
+    [@webBundle path="/bootstrap/css/" type="css" /]
     [@webBundle path="/css/" type="css" /]
     [@webBundle path="/js/" type="js" /]
     
@@ -20,9 +22,11 @@
   
 	</div>
   	[#if user??]
+  	<script type="text/javascript">
     		$(function(){
 				brite.display("MainScreen");
 			});
+	</script>
     [#else]
     	<script type="text/javascript">
 			$(function(){

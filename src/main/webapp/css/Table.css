@@ -1,0 +1,65 @@
+.Table{
+	position:absolute;
+	left:350px;
+	top:200px;
+	width:900px;
+	height:400px;
+}
+.Table .table-content{
+	position:relative;
+	width:100%;
+	height:100%;
+	background:#2c2012;
+	border-radius:200px;
+}
+
+.Table .table-center{
+	position:absolute;
+	left:20px;right:20px;top:20px;bottom:20px;
+	background-color:#0a9c2c;
+	border-radius:180px;
+}
+
+.Table .player{
+	position:absolute;
+	width:80px;
+	height:80px;
+	border:1px solid #cccccc;
+}
+.Table .player1{
+	left:190px;
+	top:-110px;
+}
+.Table .player2{
+	left:-100px;
+	top:30px;
+}
+.Table .player3{
+	left:-100px;
+	top:260px;
+}
+.Table .player4{
+	left:150px;
+	top:385px;
+}
+.Table .player5{
+	left:415px;
+	top:385px;
+}
+.Table .player6{
+	left:700px;
+	top:385px;
+}
+.Table .player7{
+	left:880px;
+	top:260px;
+}
+.Table .player8{
+	left:880px;
+	top:30px;
+}
+.Table .player9{
+	left:560px;
+	top:-110px;
+}
+
