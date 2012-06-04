@@ -8,6 +8,7 @@ import com.britesnow.snow.web.auth.AuthRequest;
 import com.britesnow.snow.web.auth.AuthToken;
 import com.britesnow.snow.web.handler.annotation.WebActionHandler;
 import com.britesnow.snow.web.handler.annotation.WebModelHandler;
+import com.britesnow.snow.web.param.annotation.WebModel;
 import com.britesnow.snow.web.param.annotation.WebParam;
 import com.google.common.base.Objects;
 import com.google.common.hash.Hashing;
@@ -55,8 +56,9 @@ public class PokerAuthRequest implements AuthRequest {
     }
     
     @WebModelHandler(startsWith = "/")
-    public void pageIndex(Map m, RequestContext rc) {
-
+    public void pageIndex(@WebModel Map m,RequestContext rc) {
+    	User user = getUserFromSession(rc);
+    	m.put("user", user);
     }
     
     @WebActionHandler

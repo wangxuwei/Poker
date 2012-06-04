@@ -19,8 +19,16 @@
   	<div id="page">
   
 	</div>
+  	[#if user??]
     		$(function(){
 				brite.display("MainScreen");
 			});
+    [#else]
+    	<script type="text/javascript">
+			$(function(){
+				brite.display("Login");
+			});
+		</script>	
+    [/#if]
   </body>
 </html>
