@@ -6,9 +6,21 @@
     [@webBundle path="/css/" type="css" /]
     [@webBundle path="/js/" type="js" /]
     
+    [#-- set jsonUrl as the actionResponse and contextPath variables --] 
+	[#assign jsonUrl]${_r.contextPath}/_actionResponse.json[/#assign]
+		<script type="text/javascript">
+		  var jsonUrl = '${_r.contextPath}/_actionResponse.json';	
+		  var contextPath = "${_r.contextPath}";
+		</script>
+	[#-- /set jsonUrl as the actionResponse and contextPath variables --]	
   </head>
 
   <body>
-    [@includeFrameContent /]
+  	<div id="page">
+  
+	</div>
+    		$(function(){
+				brite.display("MainScreen");
+			});
   </body>
 </html>
