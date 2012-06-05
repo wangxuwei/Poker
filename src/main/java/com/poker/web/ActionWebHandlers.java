@@ -1,5 +1,6 @@
 package com.poker.web;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +17,12 @@ import com.poker.game.Player;
 import com.poker.game.Table;
 
 public class ActionWebHandlers {
-    public static boolean             mock    = true;
+    public static boolean mock = true;
 
     private static Map<String, Table> gameMap = new HashMap<String, Table>();
+
+    @Inject
+    private GameRunner gameRunner;
 
     static {
         if (mock) {
