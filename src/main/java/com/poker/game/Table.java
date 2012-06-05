@@ -42,6 +42,8 @@ public class Table {
      */
     private final List<Player> activePlayers;
 
+    private final List<String> messages;
+    
     /**
      * The deck of cards.
      */
@@ -117,6 +119,7 @@ public class Table {
         this.bigBlind = bigBlind;
         players = new ArrayList<Player>();
         activePlayers = new ArrayList<Player>();
+        messages = new ArrayList<String>();
         deck = new Deck();
         board = new ArrayList<Card>();
         actionChange = lock.newCondition();
@@ -132,6 +135,10 @@ public class Table {
         players.add(player);
     }
 
+    public void addMessage(String msg) {
+        messages.add(msg);
+    }
+    
     /**
      * Main com.poker.game loop.
      */
@@ -548,6 +555,24 @@ public class Table {
         }
         return state;
     }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+    
+    public List<String> getMessages() {
+        return messages;
+    }
+    
+    public int getPot(){
+        return pot;
+    }
+    
+    public List<Card> getBoard(){
+        return board;
+    }
 }
+
+
 
 
