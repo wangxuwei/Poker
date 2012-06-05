@@ -1,6 +1,7 @@
 package com.poker.game;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TableState {
@@ -59,6 +60,11 @@ public class TableState {
 
     public TableState(List<Player> activePlayers, List<Player> players, int dealerPosition,
                       int actorPosition, List<Card> board, int pot, int bigBlind, int smallBlind) {
+        List<Player> newPlayers = new ArrayList<Player>();
+        for (Player player : activePlayers) {
+            newPlayers.add(player.publicClone());
+        }
+
         this.activePlayers = activePlayers;
         this.players = players;
         this.dealerPosition = dealerPosition;

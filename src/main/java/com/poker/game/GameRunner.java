@@ -1,25 +1,36 @@
 package com.poker.game;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.inject.Singleton;
 
-public class GameRunner implements Runnable{
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Singleton
+public class GameRunner implements Runnable {
 
     private final Object lock = new Object();
-    private List<Table> tables =  new ArrayList<Table>();
-    private final List<Table> toAdds = new ArrayList<Table>();
+    private List<Table> tables = new ArrayList<Table>();
+    private Map<Serializable, Table> tableMap = new HashMap<Serializable, Table>();
+
 
     private boolean gameOver = false;
 
-    public void addTable(Table table) {
-        synchronized (lock) {
-            toAdds.add(table);
-        }
+
+    public Table getTable(String id) {
+        return  tableMap.get(id);
     }
 
-    public Table getTable(int id) {
-        return null;
+    public Table createTable(int bigBlind) {
+        Table table = new Table(Table.DEFAULT_BIG_BLIND);
+        tableMap.put(table.getId(), table);
+        synchronized (lock) {
+            tables.add(table);
+        }
+        return table;
     }
 
     @Override
@@ -28,8 +39,7 @@ public class GameRunner implements Runnable{
             for (Table table : tables) {
                 //make new table to play tables
                 synchronized (lock) {
-                    tables.addAll(toAdds);
-                    toAdds.clear();
+                    //
                 }
                 //do something
             }
