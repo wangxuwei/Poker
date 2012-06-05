@@ -3,6 +3,7 @@ package com.poker.game;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * A Texas Hold'em player.
@@ -13,7 +14,9 @@ import java.util.Set;
  * @author woofgl
  */
 public class Player {
-    
+
+    private final String id = UUID.randomUUID().toString();
+
     /** Name. */
     private final String name;
     
@@ -320,5 +323,8 @@ public class Player {
     public String toString() {
         return name;
     }
-    
+
+    public String getId() {
+        return id;
+    }
 }

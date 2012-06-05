@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,6 +23,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author woofgl
  */
 public class Table {
+
+    private final String id = UUID.randomUUID().toString();
+
+    public static final int DEFAULT_BIG_BLIND = 2;
 
     /**
      * The maximum number of bets or raises in a single hand per player.
@@ -109,6 +115,8 @@ public class Table {
 
     private TableState state = null;
 
+    private final Map<String, Player> playerMap = new ConcurrentHashMap<String, Player>();
+
 
     /**
      * Constructor.
@@ -133,6 +141,7 @@ public class Table {
      */
     public void addPlayer(Player player, int position) {
         players.add(player);
+        playerMap.put(player.getId(), player);
     }
 
     public void addMessage(String msg) {
@@ -554,6 +563,14 @@ public class Table {
             state = new TableState(activePlayers, players, dealerPosition, actorPosition, board, pot, bigBlind, minBet);
         }
         return state;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Player getPlayer(String id) {
+        return playerMap.get(id);
     }
 
     public List<Player> getPlayers() {
