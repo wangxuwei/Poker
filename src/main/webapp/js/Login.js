@@ -13,6 +13,9 @@
 	Login.prototype.postDisplay = function(data,config){
 		var c = this;
 		var $e = c.$element;
+		var pWidth = $e.parent().width();
+		var pHeight = $e.parent().height();
+		$e.css("left",(pWidth - $e.width())/2 + "px").css("top",(pHeight - $e.height())/2 + "px");
 		
 		$e.find("input[name='username']").focus();
 		$e.find(".login-button").click(function(){

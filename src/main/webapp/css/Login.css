@@ -1,0 +1,43 @@
+.Login{
+	position:absolute;
+	left:50%;
+	top:50%;
+	width:400px;
+	height:150px;
+	border:1px solid;
+	box-shadow:2px 2px 5px 0px rgba(0,0,0,.5);
+}
+
+.Login h2{
+	height:30px;
+	line-height:30px;
+	text-align:center;
+	background:#0E90D2;
+	color:#ffffff;
+}
+.Login .field-label{
+	height:30px;
+}
+.Login .field-value{
+	height:30px;
+	line-height:30px;
+	margin:0 10px;
+}
+.Login .field-label{
+	height:30px;
+	line-height:30px;
+	margin:0 10px;
+}
+.Login .field-value{
+	height:30px;
+	line-height:30px;
+	margin:0 10px;
+}
+
+.Login .field-value input[type='text']{
+	width:350px;
+	-webkit-user-select:text;none;
+}
+.Login .login-buttonbar{
+	margin: 5px 0 0 10px;
+}
