@@ -1,0 +1,14 @@
+<script id="tmpl-Card" type="text/html">
+    <div class="Card {{if show}}show{{/if}}">
+    	<div class="card-content">
+	    	<div class="card-bg-content">
+	    		<img src="res/images/card_back.png" width="48" height="64"/>
+	    	</div>
+	    	<div class="card-fg-content">
+	    		{{if show}}
+		    		<img src="res/images/card_{{:cardSuite}}_{{:cardNo}}.png" width="48" height="64"/>
+				{{/if}}
+	    	</div>
+    	</div>
+    </div>
+</script>

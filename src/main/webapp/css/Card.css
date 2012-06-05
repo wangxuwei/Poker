@@ -1,0 +1,27 @@
+.Card{
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:48px;
+	height:64px;
+}
+.Card .card-content{
+	position:relative;
+	width:100%;
+	height:100%;
+	background:#f5f3f0;
+	border-radius:5px;
+}
+.Card .card-fg-content{
+	display:none;
+}
+.Card .card-bg-content{
+	display:block;
+}
+
+.Card.show .card-fg-content{
+	display:block;
+}
+.Card.show .card-bg-content{
+	display:none;
+}

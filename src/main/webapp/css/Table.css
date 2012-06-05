@@ -20,46 +20,143 @@
 	border-radius:180px;
 }
 
+.Table .table-line{
+	position:absolute;
+	left:50px;
+	top:50px;
+	bottom:50px;
+	right:50px;
+	z-index:1;
+	border-radius:150px;
+	border:1px dashed #cccccc;
+}
+
 .Table .player{
 	position:absolute;
 	width:80px;
 	height:80px;
 	border:1px solid #cccccc;
 }
+.Table .player .betArea{
+	position:absolute;
+	width:20px;
+	height:20px;
+}
+.Table .player .cardsArea{
+	position:absolute;
+	width:50px;
+	height:64px;
+}
+.Table .player .cardsArea .Card:nth-child(2){
+	left:15px;
+	z-index: 1;
+}
+
 .Table .player1{
 	left:190px;
 	top:-110px;
+}
+.Table .player1 .betArea{
+	left:20px;
+	top:150px;
+}
+.Table .player1 .cardsArea{
+	left:90px;
+	top:10px;
 }
 .Table .player2{
 	left:-100px;
 	top:30px;
 }
+.Table .player2 .betArea{
+	left:160px;
+	top:70px;
+}
+.Table .player2 .cardsArea{
+	left:-60px;
+	top:10px;
+}
 .Table .player3{
 	left:-100px;
 	top:260px;
+}
+.Table .player3 .betArea{
+	left:160px;
+	top:-30px;
+}
+.Table .player3 .cardsArea{
+	left:-60px;
+	top:10px;
 }
 .Table .player4{
 	left:150px;
 	top:385px;
 }
+.Table .player4 .betArea{
+	left:20px;
+	top:-95px;
+}
+.Table .player4 .cardsArea{
+	left:90px;
+	top:10px;
+}
 .Table .player5{
 	left:415px;
 	top:385px;
+}
+.Table .player5 .betArea{
+	left:0px;
+	top:-95px;
+}
+.Table .player5 .cardsArea{
+	left:90px;
+	top:10px;
 }
 .Table .player6{
 	left:700px;
 	top:385px;
 }
+.Table .player6 .betArea{
+	left:-40px;
+	top:-95px;
+}
+.Table .player6 .cardsArea{
+	left:90px;
+	top:10px;
+}
 .Table .player7{
 	left:880px;
 	top:260px;
+}
+.Table .player7 .betArea{
+	left:-110px;
+	top:-50px;
+}
+.Table .player7 .cardsArea{
+	left:90px;
+	top:10px;
 }
 .Table .player8{
 	left:880px;
 	top:30px;
 }
+.Table .player8 .betArea{
+	left:-130px;
+	top:50px;
+}
+.Table .player8 .cardsArea{
+	left:90px;
+	top:10px;
+}
 .Table .player9{
 	left:560px;
 	top:-110px;
 }
-
+.Table .player9 .betArea{
+	left:25px;
+	top:150px;
+}
+.Table .player9 .cardsArea{
+	left:90px;
+	top:10px;
+}

@@ -1,0 +1,28 @@
+.CommunityCards{
+	position:absolute;
+	left:50%;
+	top:50%;
+	width:320px;
+	height:70px;
+}
+
+.CommunityCards .Card{
+	top:2px;
+}
+
+.CommunityCards .Card:nth-child(1){
+	left:8px;
+}
+.CommunityCards .Card:nth-child(2){
+	left:72px;
+}
+.CommunityCards .Card:nth-child(3){
+	left:136px;
+}
+.CommunityCards .Card:nth-child(4){
+	left:200px;
+}
+.CommunityCards .Card:nth-child(5){
+	left:264px;
+}
+
