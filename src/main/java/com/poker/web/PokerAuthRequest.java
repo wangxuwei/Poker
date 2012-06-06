@@ -1,5 +1,5 @@
 package com.poker.web;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.britesnow.snow.util.ObjectUtil;
@@ -12,11 +12,16 @@ import com.britesnow.snow.web.param.annotation.WebModel;
 import com.britesnow.snow.web.param.annotation.WebParam;
 import com.google.common.base.Objects;
 import com.google.common.hash.Hashing;
+import com.google.inject.Inject;
 import com.poker.User;
+import com.poker.game.GameRunner;
+import com.poker.game.Player;
 
 
 public class PokerAuthRequest implements AuthRequest {
-
+    @Inject
+    private GameRunner gameRunner;
+    
     @Override
     public AuthToken authRequest(RequestContext rc) {
         // Note: this is not the login logic, the login logic would be 
@@ -86,8 +91,18 @@ public class PokerAuthRequest implements AuthRequest {
             String userToken = Hashing.sha1().hashString(user.getUsername() + user.getId()).toString();
             rc.setCookie("userToken",userToken);
             rc.setCookie("userId",user.getId());
-            
             PokerUsersListener.addUser(user);
+            
+
+            //FIXME
+            List playerList = gameRunner.getTable("1").getPlayers();
+            int index = gameRunner.mock_index++;
+            if (index>7) {
+                index=0;
+            }
+            Player player = (Player) playerList.get(index);
+            rc.getReq().getSession().setAttribute("playerId", player.getId());
+            //
         } else {
             rc.getReq().getSession().removeAttribute("user");
         }
