@@ -41,6 +41,11 @@ public class NotificationWebHandlers {
             playerList2.add(playerMap);
             //
             if (player.getId().equals(rc.getReq().getSession().getAttribute("playerId"))) {
+                List actionList = new ArrayList();
+                actionList.add("Continue");
+                actionList.add("Raise");
+                actionList.add("Fold");
+                playerMap.put("actions", actionList);
                 m.put("requestPlayerStatus", playerMap);
             }
         }
