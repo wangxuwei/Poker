@@ -64,6 +64,7 @@ public class PokerAuthRequest implements AuthRequest {
     public void pageIndex(@WebModel Map m,RequestContext rc) {
     	User user = getUserFromSession(rc);
     	m.put("user", user);
+    	m.put("playerId", rc.getReq().getSession().getAttribute("playerId"));
     }
     
     @WebActionHandler
