@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.britesnow.snow.web.RequestContext;
 import com.britesnow.snow.web.handler.annotation.WebModelHandler;
 import com.britesnow.snow.web.param.annotation.WebModel;
 import com.britesnow.snow.web.param.annotation.WebParam;
@@ -20,9 +21,10 @@ public class NotificationWebHandlers {
     private GameRunner gameRunner;
 
     @WebModelHandler(startsWith = "/notification")
-    public void notification(@WebModel Map m, @WebParam("room") String room) {
+    public void notification(@WebModel Map m, @WebParam("room") String room, RequestContext rc) {
         Table table = gameRunner.getTable(room);
         List playerList = table.getPlayers();
+        List playerList2 = new ArrayList();
         for (int i = 0; i < playerList.size(); i++) {
             Player player = (Player) playerList.get(i);
             Map playerMap = new HashMap();
@@ -35,15 +37,20 @@ public class NotificationWebHandlers {
             }
             playerMap.put("handCards", handList);
             playerMap.put("playerId", player.getId());
-            playerMap.put("status", player.getAction().getName());
-            playerList.set(i, playerMap);
+            playerMap.put("status", player.getAction() == null ? "" : player.getAction().getName());
+            playerList2.add(playerMap);
+            //
+            if (player.getId().equals(rc.getReq().getSession().getAttribute("playerId"))) {
+                m.put("requestPlayerStatus", playerMap);
+            }
         }
-        m.put("playersStatus", playerList);
+        m.put("playersStatus", playerList2);
         m.put("poolPokerChip", table.getPot());
         List cardList = table.getBoard();
+        List cardList2 = new ArrayList();
         for (int i = 0; i < cardList.size(); i++) {
-            cardList.set(i, cardList.get(i).toString());
+            cardList2.add(cardList.get(i).toString());
         }
-        m.put("communityCards", cardList);
+        m.put("communityCards", cardList2);
     }
 }
