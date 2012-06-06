@@ -12,7 +12,7 @@
 		var c = this;
 		var $e = this.$element;
 		
-		brite.display("Table");
+		brite.display("Room");
 	}
 	// --------- /Component Interface Implementation ---------- //
 	
@@ -20,8 +20,8 @@
 	
 	// --------- /Component Public API --------- //
 	
-	// --------- /Component Private API --------- //
-	// --------- Component Private API --------- //	
+	// --------- Component Private API --------- //
+	// --------- /Component Private API --------- //	
 	
 	
 	// --------- Component Registration --------- //

@@ -11,16 +11,6 @@ var app = app || {};
 		return app.getJsonData(jsonUrl,params);
 	}
 	
-	app.actions.bet = function(room,player){
-		room = 1;
-		var params = {
-				action:"bet",
-				room:room,
-				player:player
-		}
-		return app.getJsonData(jsonUrl,params);
-	}
-	
 	app.actions.call = function(room,player){
 		room = 1;
 		var params = {
@@ -60,6 +50,14 @@ var app = app || {};
 				pokerChip:pokerChip
 		}
 		return app.getJsonData(jsonUrl,params);
+	}
+	
+	app.actions.notification = function(room){
+		room = 1;
+		var params = {
+				room:room
+		}
+		return app.getJsonData(contextPath + "/notification.json",params);
 	}
 
 })(jQuery);

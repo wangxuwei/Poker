@@ -11,19 +11,31 @@
 	PrizePool.prototype.postDisplay = function(data,config){
 		var c = this;
 		var $e = this.$element;
+		var table = c.table = $e.bComponent("Table");
 		
 		app.util.alignCenter($e);
 		
+		table.$element.on("Table_PRIZE_POOL_REFRESH",function(e,communityCards){
+			refresh.call(c,communityCards);
+		});
 		
 	}
 	// --------- /Component Interface Implementation ---------- //
 	
 	// --------- Component Public API --------- //	
 	
-	// --------- /Component Private API --------- //
-	// --------- Component Private API --------- //	
-	
 	// --------- /Component Public API --------- //
+	
+	// --------- Component Private API --------- //	
+	function refresh(communityCards){
+		var c = this;
+		var $e = this.$element;
+		
+		$e.empty();
+		brite.display("PokerChip",{value:8},{parent:$e});
+	}
+	
+	// --------- /Component Private API --------- //
 	
 	// --------- Component Registration --------- //
 	brite.registerComponent("PrizePool",{

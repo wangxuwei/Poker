@@ -22,10 +22,10 @@
 	
 	// --------- Component Public API --------- //	
 	
-	// --------- /Component Private API --------- //
+	// --------- /Component Public API --------- //
 	// --------- Component Private API --------- //	
 	
-	// --------- /Component Public API --------- //
+	// --------- /Component Private API --------- //
 	
 	// --------- Component Registration --------- //
 	brite.registerComponent("PokerChip",{

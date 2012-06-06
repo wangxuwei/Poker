@@ -30,6 +30,9 @@
 	// --------- /Component Interface Implementation ---------- //
 	
 	// --------- Component Public API --------- //	
+	
+	// --------- /Component Public API --------- //
+	// --------- Component Private API --------- //	
 	Card.prototype.show = function(){
 		var c = this;
 		var $e = this.$element;
@@ -41,9 +44,6 @@
 		$e.removeClass("show");
 	}
 	// --------- /Component Private API --------- //
-	// --------- Component Private API --------- //	
-	
-	// --------- /Component Public API --------- //
 	
 	// --------- Component Registration --------- //
 	brite.registerComponent("Card",{

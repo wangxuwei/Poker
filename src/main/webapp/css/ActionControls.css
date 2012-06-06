@@ -1,0 +1,8 @@
+.ActionControls{
+	display:inline-block;
+	margin:0 auto;
+}
+.ActionControls .btn{
+	float:left;
+	margin:0 5px;
+}

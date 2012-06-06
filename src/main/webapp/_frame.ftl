@@ -22,6 +22,10 @@
 	</div>
   	[#if user??]
   	<script type="text/javascript">
+  			[#if playerId??]
+  				app = app || {};
+  				app.playerId = '${playerId}';
+  			[/#if]
     		$(function(){
 				brite.display("MainScreen");
 			});
