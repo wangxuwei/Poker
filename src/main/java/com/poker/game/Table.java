@@ -145,6 +145,7 @@ public class Table {
      */
     public void addPlayer(Player player, int position) {
         players.add(player);
+        player.setTable(this);
         playerMap.put(player.getId(), player);
     }
 
