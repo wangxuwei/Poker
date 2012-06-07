@@ -14,13 +14,13 @@ import com.google.common.base.Objects;
 import com.google.common.hash.Hashing;
 import com.google.inject.Inject;
 import com.poker.User;
-import com.poker.game.GameRunner;
+import com.poker.game.GameManager;
 import com.poker.game.Player;
 
 
 public class PokerAuthRequest implements AuthRequest {
     @Inject
-    private GameRunner gameRunner;
+    private GameManager gameManager;
     
     @Override
     public AuthToken authRequest(RequestContext rc) {
@@ -96,8 +96,8 @@ public class PokerAuthRequest implements AuthRequest {
             
 
             //FIXME
-            List playerList = gameRunner.getTable("1").getPlayers();
-            int index = gameRunner.mock_index++;
+            List playerList = gameManager.getTable("1").getPlayers();
+            int index = gameManager.mock_index++;
             if (index>7) {
                 index=0;
             }

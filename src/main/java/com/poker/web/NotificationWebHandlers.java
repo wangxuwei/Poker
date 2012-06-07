@@ -10,19 +10,19 @@ import com.britesnow.snow.web.handler.annotation.WebModelHandler;
 import com.britesnow.snow.web.param.annotation.WebModel;
 import com.britesnow.snow.web.param.annotation.WebParam;
 import com.google.inject.Inject;
+import com.poker.game.GameManager;
 import com.poker.game.Card;
-import com.poker.game.GameRunner;
 import com.poker.game.Player;
 import com.poker.game.Table;
 
 public class NotificationWebHandlers {
 
     @Inject
-    private GameRunner gameRunner;
+    private GameManager gameManager;
 
     @WebModelHandler(startsWith = "/notification")
     public void notification(@WebModel Map m, @WebParam("room") String room, RequestContext rc) {
-        Table table = gameRunner.getTable(room);
+        Table table = gameManager.getTable(room);
         List playerList = table.getPlayers();
         List playerList2 = new ArrayList();
         for (int i = 0; i < playerList.size(); i++) {

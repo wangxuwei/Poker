@@ -408,7 +408,7 @@ public class Table {
      * @param player The player.
      * @return The allowed actions.
      */
-    private Set<Action> getAllowedActions(Player player) {
+     Set<Action> getAllowedActions(Player player) {
         int actorBet = actor.getBet();
         Set<Action> actions = new HashSet<Action>();
         if (bet == 0) {
@@ -587,6 +587,14 @@ public class Table {
     
     public List<Card> getBoard(){
         return board;
+    }
+
+    public int getMinBet() {
+        return minBet;
+    }
+
+    public int getBet() {
+        return bet;
     }
 }
 

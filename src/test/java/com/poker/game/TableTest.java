@@ -6,7 +6,7 @@ import org.junit.Test;
 public class TableTest {
     @Test
     public void testGame() {
-        Table table = new Table(id, 1);
+        Table table = new Table(2);
         //add some player
         Player joe = new Player("joe", 200);
         Player mike = new Player("mike", 300);
