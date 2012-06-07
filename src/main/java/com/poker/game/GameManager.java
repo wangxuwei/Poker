@@ -78,6 +78,10 @@ public class GameManager implements Runnable {
         return table.getAllowedActions(player);
     }
 
+    public void joinTable(String room, Player player) {
+         getTable(room).addPlayer(player,-1);
+    }
+
     @Override
     public void run() {
         while (!gameOver) {
@@ -90,5 +94,44 @@ public class GameManager implements Runnable {
             }
         }
 
+    }
+
+
+    int getPoolPokerChip(String room){
+       return getTable(room).getPot();
+    }
+
+    List<Card> getCommunityCards(String room){
+        return getTable(room).getBoard();
+    }
+
+    List<Player> getPlayers(String room){
+       return getTable(room).getPlayers();
+    }
+
+    public void bet(String room, String player){
+        action(room, player, Action.BET);
+    }
+
+    public void call(String room, String player) {
+        action(room, player, Action.CALL);
+    }
+
+    public void fold(String room, String player){
+        action(room, player, Action.FOLD);
+    }
+
+    public void check(String room, String player){
+        action(room, player, Action.CHECK);
+    }
+
+    public void raise(String room, String player){
+        action(room, player, Action.RAISE);
+    }
+
+
+
+    List<Message> getMessage(String room) {
+        return getTable(room).getMessages();
     }
 }
