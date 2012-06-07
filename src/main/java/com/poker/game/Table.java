@@ -1,7 +1,5 @@
 package com.poker.game;
 
-import javax.swing.border.Border;
-import javax.xml.transform.Source;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,6 +31,8 @@ public class Table {
      */
     private static final int MAX_RAISES = 4;
 
+    public static final int MAX_MESSAGE_SIZE = 100;
+
     /**
      * The size of the big blind.
      */
@@ -48,7 +48,7 @@ public class Table {
      */
     private final List<Player> activePlayers;
 
-    private final List<String> messages;
+    private final List<Message> messages;
     
     /**
      * The deck of cards.
@@ -123,14 +123,18 @@ public class Table {
      *
      * @param bigBlind The size of the big blind.
      */
-    public Table(int bigBlind) {
+    public Table(int bigBlind, Deck deck) {
         this.bigBlind = bigBlind;
         players = new ArrayList<Player>();
         activePlayers = new ArrayList<Player>();
-        messages = new ArrayList<String>();
-        deck = new Deck();
+        messages = new ArrayList<Message>();
+        this.deck = deck;
         board = new ArrayList<Card>();
         actionChange = lock.newCondition();
+    }
+
+    public Table(int bigBlind) {
+        this(bigBlind, new DefaultDeck());
     }
 
     /**
@@ -141,11 +145,15 @@ public class Table {
      */
     public void addPlayer(Player player, int position) {
         players.add(player);
+        player.setTable(this);
         playerMap.put(player.getId(), player);
     }
 
     public void addMessage(String msg) {
-        messages.add(msg);
+        messages.add(new Message(msg));
+        if (messages.size() > MAX_MESSAGE_SIZE) {
+            messages.remove(0);
+        }
     }
     
     /**
@@ -535,6 +543,7 @@ public class Table {
             createState();
         }
         state.setMessage(message);
+        addMessage(message);
     }
 
 
@@ -577,7 +586,7 @@ public class Table {
         return players;
     }
     
-    public List<String> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
     

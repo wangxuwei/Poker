@@ -327,4 +327,14 @@ public class Player {
     public String getId() {
         return id;
     }
+
+    private Table table=null;
+
+    public Table getTable() {
+        return table;
+    }
+
+    void setTable(Table table) {
+        this.table = table;
+    }
 }
